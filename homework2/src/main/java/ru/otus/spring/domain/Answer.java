@@ -2,11 +2,9 @@ package ru.otus.spring.domain;
 
 public class Answer {
     private final String answer;
-    private final int id;
     private final boolean isRight;
 
-    public Answer(int id, String answer, boolean isRight) {
-        this.id = id;
+    public Answer(String answer, boolean isRight) {
         this.answer = answer;
         this.isRight = isRight;
     }
@@ -15,8 +13,7 @@ public class Answer {
         return isRight;
     }
 
-    @Override
-    public String toString() {
-        return id + ")" + answer + "\t\t";
+    public String getAnswer() {
+        return answer;
     }
 }

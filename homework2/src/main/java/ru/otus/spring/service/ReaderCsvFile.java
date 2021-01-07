@@ -1,6 +1,7 @@
 package ru.otus.spring.service;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 import ru.otus.spring.domain.Answer;
 import ru.otus.spring.domain.Question;
@@ -10,30 +11,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@PropertySource("classpath:application.yml")
 public class ReaderCsvFile implements Reader {
-    private final String fileName = "homework2/src/main/resources/file.csv";
-/*
-    ReaderCsvFile(@Value("${file_name}") String fileName){
+   // private final String fileName = "homework2/src/main/resources/file.csv";
+    private final IOService ioService;
+    private final String fileName;
+
+
+    public ReaderCsvFile(IOService ioService, @Value("${file-name}") String fileName) {
+        this.ioService = ioService;
         this.fileName = fileName;
     }
-/**/
+
     public List<Question> readQuestions() {
         List<Question> questions = new ArrayList<>();
         try {
-            File file = new File(fileName);
-            FileReader fr = new FileReader(file);
-            BufferedReader reader = new BufferedReader(fr);
+            BufferedReader reader = new BufferedReader(new FileReader(fileName));
             String line = reader.readLine();
 
             while (line != null) {
                 List<Answer> answers = new ArrayList<>();
                 String[] splitLine = line.split(",");
-                Question question = new Question();
-                question.setQuestion(splitLine[0]);
-                int count = 0;
+                Question question = new Question(splitLine[0]);
                 for (int i = 1; i < splitLine.length; i += 2) {
-                    count++;
-                    Answer answer = new Answer(count, splitLine[i], splitLine[i + 1].equals("1"));
+                    Answer answer = new Answer(splitLine[i], splitLine[i + 1].equals("1"));
                     answers.add(answer);
                 }
                 question.setAnswers(answers);
@@ -42,7 +43,7 @@ public class ReaderCsvFile implements Reader {
             }
 
         } catch (IOException e) {
-            System.out.println("Error in ReaderCsvFile");
+            ioService.print("Error in ReaderCsvFile");
         }
         return questions;
     }
